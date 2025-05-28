@@ -1,22 +1,45 @@
 from flask import Flask, request, jsonify
+from langchain_google_genai import ChatGoogleGenerativeAI
+import os
 
 app = Flask(__name__)
+
+# Configure the Gemini API key (Langchain will automatically pick it up)
+os.environ["GOOGLE_API_KEY"] = os.environ.get("GOOGLE_API_KEY")
+if not os.environ["GOOGLE_API_KEY"]:
+    raise ValueError("Please set the GOOGLE_API_KEY environment variable.")
+
+# Initialize the Langchain ChatGoogleGenerativeAI model
+llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash", temperature=0.7)
 
 
 @app.route('/analyze', methods=['POST'])
 def analyze_post_call():
     if request.is_json:
-        query = request.get_json()
+        query = request.get_json().get('query')
+
+        if not query:
+            return jsonify({"error": "Missing 'query' in JSON payload"}), 400
 
         #TODO
-        # 
+        # Connect to GEMINI and send the query to GEMINI
+        try:
+            response = llm.invoke(query)
+            gemini_response = response.content
 
-        response_data = {
-            "received_data": query,  # NEW DATA = response from OLLAMA
+            response_data = {
+            "input_data": query,  # Input data sent to the GEMINI
+            "gemini_response": gemini_response,  # Response from GEMINI
             "status": "success",
             "message": "Data received successfully"
-        }
-        return jsonify(response_data), 200
+            }
+            print("Response from Gemini:", gemini_response)
+            # Return the response as JSON
+            return jsonify(response_data), 200
+        except Exception as e:
+            error_message = f"Error communicating with Gemini (via Langchain): {e}"
+            print(error_message)
+            return jsonify({"error": error_message}), 500
     else:
         return jsonify({ "error": "Invalid JSON" }), 400
 
