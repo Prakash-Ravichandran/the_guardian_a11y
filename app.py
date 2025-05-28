@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 from langchain_google_genai import ChatGoogleGenerativeAI
 import os
+from knowledge import INSTRUCTIONS  # Import the variable
 
 app = Flask(__name__)
 
@@ -12,6 +13,8 @@ if not os.environ["GOOGLE_API_KEY"]:
 # Initialize the Langchain ChatGoogleGenerativeAI model
 llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash", temperature=0.7)
 
+#import instructions
+
 
 @app.route('/analyze', methods=['POST'])
 def analyze_post_call():
@@ -21,10 +24,13 @@ def analyze_post_call():
         if not query:
             return jsonify({"error": "Missing 'query' in JSON payload"}), 400
 
-        #TODO
+       
+        # Add the instructions to the query
+        user_prompt = f"{INSTRUCTIONS}\n\nUser Query: {query}"
+
         # Connect to GEMINI and send the query to GEMINI
         try:
-            response = llm.invoke(query)
+            response = llm.invoke(user_prompt)
             gemini_response = response.content
 
             response_data = {
