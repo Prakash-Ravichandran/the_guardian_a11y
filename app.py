@@ -1,7 +1,10 @@
 from flask import Flask, request, jsonify
 from langchain_google_genai import ChatGoogleGenerativeAI
 import os
+import json
 from knowledge import INSTRUCTIONS  # Import the variable
+from role import roles_list
+from aria_attributes import aria_attributes_list
 
 app = Flask(__name__)
 
@@ -24,7 +27,7 @@ def analyze_post_call():
 
        
         # Add the instructions to the query
-        user_prompt = f"{INSTRUCTIONS}\n\nUser Query: {query}"
+        user_prompt = f"{INSTRUCTIONS}\n\n  {roles_list} {aria_attributes_list}\n\n User Query: {query}"
 
         # Connect to GEMINI and send the query to GEMINI
         try:
@@ -38,6 +41,7 @@ def analyze_post_call():
             "message": "Data received successfully"
             }
             print("Response from Gemini:", gemini_response)
+            # print(json.dumps(gemini_response, indent=4))
             # Return the response as JSON
             return jsonify(response_data), 200
         except Exception as e:
