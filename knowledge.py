@@ -30,5 +30,6 @@ https://web.dev/articles/preload-responsive-images
 	2. Should tell long running test cases
 	3. Should tell proper semantic should be followed.
 	4. Should tell browser that label and inputs should be connected.
-Should include WCAG web standards while providing solution.
+	5. Should include WCAG web standards while providing solution.
+	6. If user submits irrevelant content, just reply a string "invalid request" and do not provide any suggestions or solutions.
 """

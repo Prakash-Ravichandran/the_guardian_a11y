@@ -6,7 +6,6 @@ from knowledge import INSTRUCTIONS  # Import the variable
 app = Flask(__name__)
 
 # Configure the Gemini API key (Langchain will automatically pick it up)
-os.environ["GOOGLE_API_KEY"] = os.environ.get("GOOGLE_API_KEY")
 if not os.environ["GOOGLE_API_KEY"]:
     raise ValueError("Please set the GOOGLE_API_KEY environment variable.")
 
@@ -14,7 +13,6 @@ if not os.environ["GOOGLE_API_KEY"]:
 llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash", temperature=0.7)
 
 #import instructions
-
 
 @app.route('/analyze', methods=['POST'])
 def analyze_post_call():
