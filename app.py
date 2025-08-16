@@ -5,15 +5,18 @@ import json
 from knowledge import INSTRUCTIONS  # Import the variable
 from role import roles_list
 from aria_attributes import aria_attributes_list
+from flask_cors import CORS
 
 app = Flask(__name__)
+# Enable CORS for all routes
+CORS(app)
 
 # Configure the Gemini API key (Langchain will automatically pick it up)
 if not os.environ["GOOGLE_API_KEY"]:
     raise ValueError("Please set the GOOGLE_API_KEY environment variable.")
 
 # Initialize the Langchain ChatGoogleGenerativeAI model
-llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash", temperature=0.7)
+llm = ChatGoogleGenerativeAI(model="gemini-2.5-pro", temperature=0.7)  # Print the response to verify the connection
 
 #import instructions
 
@@ -46,6 +49,8 @@ def analyze_post_call():
             return jsonify(response_data), 200
         except Exception as e:
             error_message = f"Error communicating with Gemini (via Langchain): {e}"
+            #  stack trace for debugging
+            print("Error:", e)
             print(error_message)
             return jsonify({"error": error_message}), 500
     else:
