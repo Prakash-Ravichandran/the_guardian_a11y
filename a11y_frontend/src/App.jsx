@@ -1,16 +1,8 @@
 import React, { useState } from "react";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import sendImg from "./assets/send.svg";
 import "./App.css";
-
-const inputTextAreaInlineStyles = {
-  width: "100%",
-  padding: "10px",
-  fontSize: "16px",
-  border: "1px solid #ccc",
-  borderRadius: "4px",
-  boxSizing: "border-box",
-};
 
 function App() {
   const [userInput, setUserInput] = useState("");
@@ -19,9 +11,10 @@ function App() {
 
   const handleSubmit = async () => {
     console.log("Button clicked, sending request to server...");
-    setIsLoading(true);
+    setIsLoading(() => true);
     const currentuserInput = userInput.trim();
-    setMessages([...messages, currentuserInput]);
+    setMessages([...messages, { text: currentuserInput, sender: "user" }]);
+    setUserInput("");
     try {
       const response = await fetch("http://localhost:5000/analyze", {
         method: "POST",
@@ -36,55 +29,76 @@ function App() {
 
       const data = await response.json();
       console.log("Response from server:", data);
-      setMessages((prevMessages) => [...prevMessages, data.gemini_response]);
-      setUserInput("");
-      setIsLoading(false);
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        { text: data.gemini_response, sender: "assistant" },
+      ]);
+      setIsLoading( () => false);
     } catch (error) {
       console.error("Error during fetch:", error);
     }
   };
 
-  const Loader = <p>Loading...</p>;
+  const Loader = () => (
+    <p>Loading...</p>
+  ); 
+
+  const AssistantComponent = ({ msg, index}) => {
+
+    return (
+      <div className={"assistant"} key={`${index}-assistant`}>
+        <Markdown remarkPlugins={[remarkGfm]} key={`$${index}-assistant`}>
+          {msg}
+        </Markdown>
+      </div>
+    );
+  };
+
 
   return (
     <>
       <h1 className="welcome-heading">Welcome to Guardian A11Y !</h1>
 
-      <div>
-        messages:
-        {messages.length > 0 ? (
-          messages.map((input, index) => (
-             <Markdown key={index} remarkPlugins={[remarkGfm]}>
-            {input.toString()}
-          </Markdown>
-          ))
-        ) : (
-          <p>No user inputs yet.</p>
-          )}
+      <div className="chat-container">
+        <div className="chat-nested-container">
+          <div className="messages">
+            {messages.length > 0 &&
+              messages.map((msg, index) =>
+                msg.sender === "user" ? (
+                  <div className={"user"} key={`user-${index}`}>
+                    {msg.text}
+                  </div>
+                ) : (
+                  <AssistantComponent
+                    msg={msg.text}
+                    index={index}
+                    key={`assistant-${index}`}
+                  />
+                )
+              )}
+              {isLoading && (<Loader />)}
+          </div>
+        </div>
       </div>
 
-      {/* {isLoading ? (
-        Loader
-      ) : (
-        <div
-          style={{ background: "gray", padding: "20px", borderRadius: "8px" }}
-        >
-          <Markdown remarkPlugins={[remarkGfm]}>
-            {accces_data.toString()}
-          </Markdown>
+      <div className="query-container">
+        <input
+          type="text"
+          value={userInput}
+          placeholder="Ask Guardian A11Y with Code Snippet ..."
+          aria-label="Name input field"
+          className="input-textarea"
+          onChange={(e) => setUserInput(e.target.value)}
+        />
+        <div className="send">
+          <button
+            onClick={handleSubmit}
+            style={{ outline: "none", border: "none", background: "none" }}
+          >
+            <img src={sendImg} alt="Send" />
+          </button>
         </div>
-      )} */}
-
-      <input
-        type="text"
-        value={userInput}
-        placeholder="Feed the snippet"
-        aria-label="Name input field"
-        style={inputTextAreaInlineStyles}
-        onChange={(e) => setUserInput(e.target.value)}
-      />
-      <br />
-      <button onClick={handleSubmit}>Submit</button>
+      </div>
     </>
   );
 }

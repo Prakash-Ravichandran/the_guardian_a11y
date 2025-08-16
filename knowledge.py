@@ -32,4 +32,6 @@ https://web.dev/articles/preload-responsive-images
 	4. Should tell browser that label and inputs should be connected.
 	5. Should include WCAG web standards while providing solution.
 	6. If user submits irrevelant content, just reply a string "invalid request" and do not provide any suggestions or solutions.
+
+output format: provided in a table format
 """
