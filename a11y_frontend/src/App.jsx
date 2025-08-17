@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import sendImg from "./assets/send.svg";
+import { Loader, SkeletonLoader, ShimmerLoader} from "./components/loader.jsx";
 import "./App.css";
 
 function App() {
@@ -33,18 +34,15 @@ function App() {
         ...prevMessages,
         { text: data.gemini_response, sender: "assistant" },
       ]);
-      setIsLoading( () => false);
+      setIsLoading(() => false);
     } catch (error) {
       console.error("Error during fetch:", error);
     }
   };
 
-  const Loader = () => (
-    <p>Loading...</p>
-  ); 
+  // const Loader = () => <p>Loading...</p>;
 
-  const AssistantComponent = ({ msg, index}) => {
-
+  const AssistantComponent = ({ msg, index }) => {
     return (
       <div className={"assistant"} key={`${index}-assistant`}>
         <Markdown remarkPlugins={[remarkGfm]} key={`$${index}-assistant`}>
@@ -76,27 +74,37 @@ function App() {
                   />
                 )
               )}
-              {isLoading && (<Loader />)}
+            {isLoading  &&  <ShimmerLoader />}
           </div>
         </div>
-      </div>
+        <div
+          className="query-container"
+          style={{ position: "sticky", bottom: 0, width: "100%" }}
+        >
+          <div className="query">
+            <textarea
+              value={userInput}
+              name="user-input"
+              placeholder="Ask Guardian A11Y..."
+              aria-label="user-input"
+              className="input-textarea"
+              onChange={(e) => setUserInput(e.target.value)}
+              onKeyDown={(e) =>  {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  handleSubmit();
+                }
+              }}
+            />
 
-      <div className="query-container">
-        <input
-          type="text"
-          value={userInput}
-          placeholder="Ask Guardian A11Y with Code Snippet ..."
-          aria-label="Name input field"
-          className="input-textarea"
-          onChange={(e) => setUserInput(e.target.value)}
-        />
-        <div className="send">
-          <button
-            onClick={handleSubmit}
-            style={{ outline: "none", border: "none", background: "none" }}
-          >
-            <img src={sendImg} alt="Send" />
-          </button>
+            {userInput.length > 0 && (
+              <div className="send">
+                <button onClick={handleSubmit} className="send-button">
+                  <img src={sendImg} alt="Send" />
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </>
