@@ -19,7 +19,8 @@ body {
 
 .welcome-heading {
   font-size: 40px;
-  color: var(--ring-color);
+  /* color: var(--ring-color); */
+  color: #2F72ED;
   margin-bottom: 1.5rem;
 }
 
@@ -42,8 +43,10 @@ button.send-button {
   overflow-x: hidden;
   overflow-y: scroll;
   border-radius: 8px;
-  border: 1px solid darkgray;
-  background-color: rgb(216, 224, 236);
+  /* border: 1px solid darkgray; */
+  border: 1px solid #2F72ED;
+  /* background-color: rgb(216, 224, 236); */
+  background-color: #FFF;
   color: black;
   font-size: 14px;
   padding: 10px 10px;
@@ -63,7 +66,10 @@ button.send-button {
 .user {
   width: 40%;
   padding: 10px 12px;
-  background-color: rgba(156, 163, 175);
+  /* background-color: rgba(156, 163, 175); */
+  /* background-color: #E5E8CC; */
+  /* background-color: #DDE0C3; */
+  background-color: #E8EDDD;
   color: black;
   font-family: Arial, Helvetica, sans-serif;
   border-radius: 24px 0px 24px 24px;
@@ -76,7 +82,9 @@ button.send-button {
   overflow-x: scroll;
   margin: 0 auto;
   padding: 10px 12px;
-  background-color: #EDEDED;
+  /* background-color: #EDEDED; */
+  background-color: rgb(216, 224, 236);
+  border: 1px solid #2F72ED;
   color: black;
   font-family: sans-serif;
   border-radius: 5px;
