@@ -1,8 +1,11 @@
 import React, { useState } from "react";
-import Markdown from "react-markdown";
+// import Markdown from "react-markdown";
+import ReactMarkdown from "react-markdown";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 import remarkGfm from "remark-gfm";
 import sendImg from "./assets/send.svg";
-import { Loader, SkeletonLoader, ShimmerLoader} from "./components/loader.jsx";
+import { ShimmerLoader } from "./components/loader.jsx";
 import "./App.css";
 
 function App() {
@@ -45,18 +48,40 @@ function App() {
   const AssistantComponent = ({ msg, index }) => {
     return (
       <div className={"assistant"} key={`${index}-assistant`}>
-        <Markdown remarkPlugins={[remarkGfm]} key={`$${index}-assistant`}>
+        <ReactMarkdown
+          remarkPlugins={[remarkGfm]}
+          key={`$${index}-assistant`}
+          components={{
+            code({ className, children, ...rest }) {
+              const match = /language-(\w+)/.exec(className || "");
+              return match ? (
+                <SyntaxHighlighter
+                  PreTag="div"
+                  language={match[1]}
+                  style={vscDarkPlus}
+                  {...rest}
+                >
+                  {children}
+                </SyntaxHighlighter>
+              ) : (
+                <code {...rest} className={className}>
+                  {children}
+                </code>
+              );
+            },
+          }}
+        >
           {msg}
-        </Markdown>
+        </ReactMarkdown>
       </div>
     );
   };
 
-
   return (
     <>
-      <h1 className="welcome-heading">Welcome to Guardian A11Y !</h1>
 
+      {/* <h1 className="welcome-heading">Guardian A11Y! A Web for All, by All.</h1> */}
+      <h1 className="welcome-heading">The Guardian A11Y ! Building an Inclusive Web</h1>
       <div className="chat-container">
         <div className="chat-nested-container">
           <div className="messages">
@@ -74,7 +99,7 @@ function App() {
                   />
                 )
               )}
-            {isLoading  &&  <ShimmerLoader />}
+            {isLoading && <ShimmerLoader />}
           </div>
         </div>
         <div
@@ -89,7 +114,7 @@ function App() {
               aria-label="user-input"
               className="input-textarea"
               onChange={(e) => setUserInput(e.target.value)}
-              onKeyDown={(e) =>  {
+              onKeyDown={(e) => {
                 if (e.key === "Enter" && !e.shiftKey) {
                   e.preventDefault();
                   handleSubmit();
