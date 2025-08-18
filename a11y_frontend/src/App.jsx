@@ -79,9 +79,10 @@ function App() {
 
   return (
     <>
-
       {/* <h1 className="welcome-heading">Guardian A11Y! A Web for All, by All.</h1> */}
-      <h1 className="welcome-heading">The Guardian A11Y ! Building an Inclusive Web</h1>
+      <h1 className="welcome-heading">
+        The Guardian A11Y ! Building an Inclusive Web
+      </h1>
       <div className="chat-container">
         <div className="chat-nested-container">
           <div className="messages">
@@ -122,13 +123,11 @@ function App() {
               }}
             />
 
-            {userInput.length > 0 && (
-              <div className="send">
-                <button onClick={handleSubmit} className="send-button">
-                  <img src={sendImg} alt="Send" />
-                </button>
-              </div>
-            )}
+            <div className="send">
+              <button onClick={handleSubmit} className="send-button">
+                <img src={sendImg} alt="Send" />
+              </button>
+            </div>
           </div>
         </div>
       </div>
