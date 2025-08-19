@@ -6,6 +6,8 @@ from knowledge import INSTRUCTIONS  # Import the variable
 from role import roles_list
 from aria_attributes import aria_attributes_list
 from flask_cors import CORS
+from mock_data import MOCK_DATA  # Import the mock data
+import time
 
 app = Flask(__name__)
 # Enable CORS for all routes
@@ -28,13 +30,22 @@ def analyze_post_call():
         if not query:
             return jsonify({"error": "Missing 'query' in JSON payload"}), 400
 
-       
+        # For mock_respose,
+        if os.getenv("USE_MOCK_RESPONSE", 'false').lower() == "true":
+            return jsonify(MOCK_DATA), 200    
+
         # Add the instructions to the query
         user_prompt = f"{INSTRUCTIONS}\n\n  {roles_list} {aria_attributes_list}\n\n User Query: {query}"
 
         # Connect to GEMINI and send the query to GEMINI
         try:
+            # capture elapsed time for the request
+            start_time = time.time()
+            print("Sending query to GEMINI:", user_prompt)
             response = llm.invoke(user_prompt)
+            end_time = time.time()
+            elapsed_time = end_time - start_time
+            print(f"Elapsed time for GEMINI response: {elapsed_time:.2f} seconds")
             gemini_response = response.content
 
             response_data = {
